@@ -4,6 +4,7 @@ import cors from "cors";
 import bodyParser from "body-parser";
 import cookieParser from "cookie-parser";
 import { config } from "dotenv";
+import productRouter from "../routes/products.js";
 
 
 config();
@@ -32,8 +33,10 @@ expressApp.use(cookieParser());
 expressApp.use(morgan("dev"));
 
 const api= process.env.API_URL;
-console.log(api);
+
 //ROUTAS
+expressApp.use(`${api}/products`,productRouter)
+
 expressApp.get(`${api}/`, (req, res) => {
   res.send("Hello World!");
 });
