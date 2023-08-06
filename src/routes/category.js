@@ -6,10 +6,14 @@ const categoryRouter = Router();
 categoryRouter.post("/", async (req, res) => {
   try {
     const category = req.body;
-    const response = await createCategory(category);
-    res.status(201).json(response);
+    const createdCategory = await createCategory(category);
+    res.status(201).json(createdCategory);
   } catch (error) {
-    res.status(500).json(error);
+    if (error.message === "Category with that name already exists") {
+      res.status(409).json({ error: error.message });
+    } else {
+      res.status(500).json({ error: "Failed to create the category. Please try again later." });
+    }
   }
 });
 
@@ -35,11 +39,12 @@ categoryRouter.get("/:id", async (req, res) => {
 categoryRouter.put("/:id", async (req, res) => {
   try {
     const { id } = req.params;
-    const category = req.body;
-    const response = await updateCategory(id, category);
-    res.status(200).json(response);
+    const updatedCategory = req.body;
+
+    const updatedCategoryResult = await updateCategory(id, updatedCategory);
+    res.status(200).json(updatedCategoryResult);
   } catch (error) {
-    res.status(500).json(error);
+    res.status(500).json({ error: "Failed to update the category. Please try again later." });
   }
 });
 
