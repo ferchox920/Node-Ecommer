@@ -15,3 +15,40 @@ export async function createProducts(product) {
     throw error; // Re-lanzamos el error para que quien llame a esta función pueda manejarlo
   }
 }
+
+export async function getProducts() {
+  try {
+    return await Product.find();
+  } catch (error) {
+    console.error("Error getting products:", error);
+    throw error;
+  }
+}
+
+
+export async function getProduct(productId) {
+  try {
+    return await Product.findById(productId);
+  } catch (error) {
+    console.error("Error getting product:", error);
+    throw error;
+  }
+}
+
+export async function updateProduct(productId, product) {
+  try {
+    return await Product.update(productId, product);
+  } catch (error) {
+    console.error("Error updating product:", error);
+    throw error;
+  }
+}
+
+export async function deleteProduct(productId) {
+  try {
+    return await Product.delete(productId);
+  } catch (error) {
+    console.error("Error deleting product:", error);
+    throw error;
+  }
+}
