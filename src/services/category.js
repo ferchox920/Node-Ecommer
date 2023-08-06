@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import Category from "../models/category.js";
 
 export async function createCategory(category) {
@@ -27,6 +28,9 @@ export async function getCategories() {
 
   export async function getCategory(_id) {
     try {
+      if(!mongoose.isValidObjectId(_id)){
+        throw new Error("Invalid id");
+      }
       return await Category.findById(_id); // Utiliza el método findById en lugar de findOne
     } catch (error) {
       console.error("Error getting category:", error);
@@ -37,6 +41,9 @@ export async function getCategories() {
   export async function updateCategory(categoryId, updatedCategory) {
     try {
       const { name } = updatedCategory;
+      if(!mongoose.isValidObjectId(categoryId)){
+        throw new Error("Invalid id");
+      }
   
       // Verificar si existe una categoría con el mismo nombre
       const existingCategoryWithSameName = await Category.findOne({ name: { $regex: new RegExp(`^${name}$`, 'i') } });
@@ -70,12 +77,12 @@ export async function getCategories() {
   
   export async function deleteCategory(id) {
     try {
+      if (!mongoose.isValidObjectId(id)) {
+        throw new Error("Invalid id");
+      }
       return await Category.deleteOne({ _id: id });
     } catch (error) {
       console.error("Error deleting product:", error);
       throw error;
     }
   }
-
-
-  

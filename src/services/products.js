@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import Category from "../models/category.js";
 import Product from "../models/products.js";
 
@@ -8,6 +9,10 @@ export async function createProduct(product) {
     const existingProduct = await Product.findOne({ code });
     if (existingProduct) {
       throw new Error("Product with the given code already exists");
+    }
+
+    if(!mongoose.isValidObjectId(category)){
+      throw new Error("Invalid category");
     }
 
     const existingCategory = await Category.findById(category);
@@ -27,7 +32,7 @@ export async function createProduct(product) {
 
 export async function getProducts() {
   try {
-    return await Product.find();
+    return await Product.find().populate('category');
   } catch (error) {
     console.error("Error getting products:", error);
     throw error;
@@ -37,7 +42,10 @@ export async function getProducts() {
 
 export async function getProduct(productId) {
   try {
-    const product = await Product.findById(productId);
+    if(!mongoose.isValidObjectId(productId)){
+      throw new Error("Invalid id");
+    }
+    const product = await Product.findById(productId).populate('category');
     if (!product) {
       throw new Error("Product not found");
     }
@@ -52,6 +60,9 @@ export async function getProduct(productId) {
 export async function updateProduct(productId, updatedProduct) {
   try {
     const { code } = updatedProduct;
+       if(!mongoose.isValidObjectId(productId)){
+      throw new Error("Invalid id");
+    }
     const existingProductWithCode = await Product.findOne({ code });
 
     if (existingProductWithCode && existingProductWithCode._id.toString() !== productId) {
@@ -88,6 +99,9 @@ export async function updateProduct(productId, updatedProduct) {
 
 export async function deleteProduct(productId) {
   try {
+    if(!mongoose.isValidObjectId(productId)){
+      throw new Error("Invalid id");
+    }
     return await Product.deleteOne({ _id: productId }); 
   } catch (error) {
     console.error("Error deleting product:", error);

@@ -9,6 +9,8 @@ productRouter.post("/", async (req, res) => {
     const createdProduct = await createProduct(product);
     res.status(201).json(createdProduct);
   } catch (error) {
+    
+    console.error("Error get products:", error.message);
     res.status(400).json({ error: error.message });
   }
 });
