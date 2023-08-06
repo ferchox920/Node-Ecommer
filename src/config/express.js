@@ -5,6 +5,7 @@ import bodyParser from "body-parser";
 import cookieParser from "cookie-parser";
 import { config } from "dotenv";
 import productRouter from "../routes/products.js";
+import categoryRouter from "../routes/category.js";
 
 
 config();
@@ -36,6 +37,7 @@ const api= process.env.API_URL;
 
 //ROUTAS
 expressApp.use(`${api}/products`,productRouter)
+expressApp.use(`${api}/category`,categoryRouter)
 
 expressApp.get(`${api}/`, (req, res) => {
   res.send("Hello World!");
