@@ -28,17 +28,43 @@ export async function createProduct(product) {
   }
 }
 
-
-
-export async function getProducts() {
+export async function countProducts() {
   try {
-    return await Product.find().populate('category');
-  } catch (error) {
-    console.error("Error getting products:", error);
+    const count = await Product.countDocuments();
+    if (!count) {
+      throw new Error("No products found");
+    }
+    return count;
+  }
+   catch (error) {
+    console.error("Error counting products:", error);
+    throw error;
+  }
+}
+export async function findFeatured(count) {
+  try {
+    const products = await Product.find({isFeatured:true}).limit(count)
+    // .populate('category');
+    if (!products) {
+      throw new Error("No products found");
+    }
+    return products;
+  }
+   catch (error) {
+    console.error("Error counting products:", error);
     throw error;
   }
 }
 
+export async function getProducts(filter) {
+  try {
+    
+    return await Product.find(filter).populate('category');
+  } catch (error) {
+    console.error("Error getting products:", error);
+    throw new Error("Failed to get products. Please try again later.");
+  }
+}
 
 export async function getProduct(productId) {
   try {

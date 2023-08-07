@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { createProduct, deleteProduct, getProduct, getProducts, updateProduct } from "../services/products.js";
+import { countProducts, createProduct, deleteProduct, findFeatured, getProduct, getProducts, updateProduct } from "../services/products.js";
 
 const productRouter = Router();
 
@@ -15,12 +15,20 @@ productRouter.post("/", async (req, res) => {
   }
 });
 
+//Can send query params to filter products or not for find all 
 productRouter.get("/", async (req, res) => {
   try {
-    const response = await getProducts();
+    let filter = {};
+    if (req.query.category) {
+      const categories = req.query.category.split(",").filter((category) => category.trim() !== "");
+      if (categories.length > 0) {
+        filter = { category: { $in: categories } };
+      }
+    }
+    const response = await getProducts(filter);
     res.status(200).json(response);
   } catch (error) {
-    res.status(400).json({ error: error.message });
+    res.status(500).json({ error: "Failed to get products. Please try again later." });
   }
 });
 
@@ -55,6 +63,28 @@ productRouter.put("/:id", async (req, res) => {
     }
   }
 });
+
+productRouter.get("/get/count", async (req, res) => {
+  try {
+    const response = await countProducts();
+    res.status(200).json({productCount:response});
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+})
+
+productRouter.get("/get/featured/:count", async (req, res) => {
+  try {
+    const count = req.params.count ? req.params.count : 0;
+    console.log(count);
+    const response = await findFeatured(+count);
+    res.status(200).json(response);
+  
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+})
+
 
 productRouter.delete("/:id", async (req, res) => {
   try {
