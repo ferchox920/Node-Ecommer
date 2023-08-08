@@ -7,7 +7,9 @@ import { config } from "dotenv";
 import productRouter from "../routes/products.js";
 import categoryRouter from "../routes/category.js";
 import userRouter from "../routes/user.js";
-
+import authRoutes from "../routes/auth.js";
+import authJwt from "../helper/jwt.js";
+import errorHandler from "../helper/error-handler.js";
 
 config();
 
@@ -33,15 +35,16 @@ expressApp.use(bodyParser.urlencoded({ extended: true }));
 expressApp.use(bodyParser.json());
 expressApp.use(cookieParser());
 expressApp.use(morgan("dev"));
-
-const api= process.env.API_URL;
+expressApp.use(authJwt());
+expressApp.use(errorHandler);
 
 //ROUTAS
-expressApp.use(`${api}/products`,productRouter)
-expressApp.use(`${api}/category`,categoryRouter)
-expressApp.use(`${api}/user`,userRouter)
+expressApp.use(`${process.env.API_URL}/products`, productRouter);
+expressApp.use(`${process.env.API_URL}/category`, categoryRouter);
+expressApp.use(`${process.env.API_URL}/user`, userRouter);
+expressApp.use(`${process.env.API_URL}/auth`, authRoutes);
 
-expressApp.get(`${api}/`, (req, res) => {
+expressApp.get(`${process.env.API_URL}/`, (req, res) => {
   res.send("Hello World!");
 });
 
