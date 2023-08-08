@@ -10,6 +10,7 @@ import userRouter from "../routes/user.js";
 import authRoutes from "../routes/auth.js";
 import authJwt from "../helper/jwt.js";
 import errorHandler from "../helper/error-handler.js";
+import orderRouter from "../routes/orders.js";
 
 config();
 
@@ -43,6 +44,7 @@ expressApp.use(`${process.env.API_URL}/products`, productRouter);
 expressApp.use(`${process.env.API_URL}/category`, categoryRouter);
 expressApp.use(`${process.env.API_URL}/user`, userRouter);
 expressApp.use(`${process.env.API_URL}/auth`, authRoutes);
+expressApp.use(`${process.env.API_URL}/orders`, orderRouter);
 
 expressApp.get(`${process.env.API_URL}/`, (req, res) => {
   res.send("Hello World!");

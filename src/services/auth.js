@@ -32,7 +32,7 @@ async function authGenericResponse(user) {
 
 
     const payload = {
-        id: user.id,
+        id: user._id,
         isAdmin: user.isAdmin,
     };
     return {

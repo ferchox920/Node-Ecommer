@@ -39,10 +39,12 @@ export async function createUser(userData) {
   }
 }
 
-export async function getUserById(id) {
+
+export async function getUserById(_id) {
   try {
-    const user = await User.findById({ id }).select("-passwordHash");
+    const user = await User.findById(_id);
     if (!user) {
+    
       throw new Error("User does not exist.");
     }
     return user;
@@ -51,6 +53,7 @@ export async function getUserById(id) {
     throw new Error("Failed to get user. Please try again later.");
   }
 }
+
 
 export async function getAllUsers() {
   try {
