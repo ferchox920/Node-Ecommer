@@ -1,16 +1,23 @@
 import { Router } from "express";
 import { countProducts, createProduct, deleteProduct, findFeatured, getProduct, getProducts, updateProduct } from "../services/products.js";
+import uploadOptions from "../services/multer.js";
 
 const productRouter = Router();
 
-productRouter.post("/", async (req, res) => {
+productRouter.post("/", uploadOptions.single('image'), async (req, res) => {
   try {
-    const product = req.body;
+    console.log(req.file);
+    const file = req.file;
+    const product = req.body; // Parsea el objeto JSON
+    const basePath = `${req.protocol}://${req.get('host')}/public/uploads/`;
+    if (file) {
+      product.image = `${basePath}${file.name}`
+    }
+    
     const createdProduct = await createProduct(product);
     res.status(201).json(createdProduct);
   } catch (error) {
-    
-    console.error("Error get products:", error.message);
+    console.error("Error creating product:", error.message);
     res.status(400).json({ error: error.message });
   }
 });
@@ -73,7 +80,7 @@ productRouter.get("/get/count", async (req, res) => {
   }
 })
 
-productRouter.get("/get/featured/:count", async (req, res) => {
+productRouter.get("/get/featured/:count?", async (req, res) => {
   try {
     const count = req.params.count ? req.params.count : 0;
     console.log(count);
@@ -84,6 +91,7 @@ productRouter.get("/get/featured/:count", async (req, res) => {
     res.status(400).json({ error: error.message });
   }
 })
+
 
 
 productRouter.delete("/:id", async (req, res) => {

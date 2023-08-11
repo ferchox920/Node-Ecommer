@@ -2,16 +2,18 @@ import mongoose from "mongoose";
 import Category from "../models/category.js";
 import Product from "../models/products.js";
 
-export async function createProduct(product) {
+
+
+export async function createProduct(productData) {
   try {
-    const { category, code } = product;
+    const { category, code } = productData;
 
     const existingProduct = await Product.findOne({ code });
     if (existingProduct) {
       throw new Error("Product with the given code already exists");
     }
 
-    if(!mongoose.isValidObjectId(category)){
+    if (!mongoose.isValidObjectId(category)) {
       throw new Error("Invalid category");
     }
 
@@ -20,13 +22,14 @@ export async function createProduct(product) {
       throw new Error("Category not found");
     }
 
-    const createdProduct = await Product.create(product);
+    const createdProduct = await Product.create(productData);
     return createdProduct;
   } catch (error) {
     console.error("Error creating product:", error);
     throw error;
   }
 }
+
 
 export async function countProducts() {
   try {
