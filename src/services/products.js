@@ -10,7 +10,7 @@ export async function createProduct(productData, file, basePath) {
     const { category, code } = productData;
 
     // Asegúrate de que la carpeta de destino exista
-    const uploadPath = "src/public/uploads/";
+    const uploadPath = "./public/uploads/";
     if (!fs.existsSync(uploadPath)) {
       fs.mkdirSync(uploadPath, { recursive: true }); // Crea la carpeta si no existe
     }

@@ -11,6 +11,7 @@ import authRoutes from "../routes/auth.js";
 import authJwt from "../helper/jwt.js";
 import errorHandler from "../helper/error-handler.js";
 import orderRouter from "../routes/orders.js";
+import path from "path";
 
 
 config();
@@ -37,8 +38,15 @@ expressApp.use(bodyParser.urlencoded({ extended: true }));
 expressApp.use(bodyParser.json());
 expressApp.use(cookieParser());
 expressApp.use(morgan("dev"));
+expressApp.use(express.json());
 expressApp.use(authJwt());
 expressApp.use(errorHandler);
+
+// Configura el middleware para servir archivos estáticos desde la ruta de carga
+expressApp.use('/public/uploads', express.static('public/uploads'));
+
+
+
 
 //ROUTAS
 expressApp.use(`${process.env.API_URL}/products`, productRouter);
