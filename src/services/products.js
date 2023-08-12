@@ -10,7 +10,7 @@ export async function createProduct(productData, file, basePath) {
     const { category, code } = productData;
 
     // Asegúrate de que la carpeta de destino exista
-    const uploadPath = "src/public/uploads";
+    const uploadPath = "src/public/uploads/";
     if (!fs.existsSync(uploadPath)) {
       fs.mkdirSync(uploadPath, { recursive: true }); // Crea la carpeta si no existe
     }
@@ -32,16 +32,12 @@ export async function createProduct(productData, file, basePath) {
       throw new Error("Category not found");
     }
 
-    // Actualiza la ruta de la imagen en los datos del producto
     productData.image = `${basePath}${file.name}`;
 
-    // Agrega la ruta de la imagen al array de imágenes
     if (!productData.images) {
       productData.images = [];
     }
     productData.images.push(productData.image);
-
-    // Crea el producto
     createdProduct = await Product.create(productData);
     return createdProduct
   } catch (error) {
