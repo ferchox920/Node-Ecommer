@@ -14,6 +14,4 @@ async function bootstrap() {
         console.error('Error al iniciar el servidor:', error);
     }
 }
-
-// Llamamos a la función bootstrap para iniciar el servidor
 bootstrap();
