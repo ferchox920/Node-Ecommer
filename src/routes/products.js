@@ -1,23 +1,50 @@
 import { Router } from "express";
 import { countProducts, createProduct, deleteProduct, findFeatured, getProduct, getProducts, updateProduct } from "../services/products.js";
-import uploadOptions from "../services/multer.js";
+import fileUpload from "express-fileupload";
+import fs from 'fs'; 
 
 const productRouter = Router();
 
-productRouter.post("/", uploadOptions.single('image'), async (req, res) => {
+// productRouter.post("/", fileUpload(), async (req, res) => {
+//   try {
+//     if (!req.files || !req.files.images) {
+//       return res.status(400).json({ error: 'No image in the request' });
+//     }
+
+//     const file = req.files.images;
+//     const product = req.body;
+
+//     // Asegúrate de que la carpeta de destino exista
+//     const uploadPath = 'public/uploads';
+//     if (!fs.existsSync(uploadPath)) {
+//       fs.mkdirSync(uploadPath, { recursive: true }); // Crea la carpeta si no existe
+//     }
+
+//     // Crea el archivo en la ubicación deseada
+//     fs.writeFileSync(`${uploadPath}/1.jpg`, file.data);
+
+//     // Luego, puedes manejar la creación del producto o realizar otras acciones
+//     // Ejemplo de respuesta exitosa
+//     res.status(201).json({ message: 'Archivo creado exitosamente' });
+//   } catch (error) {
+//     console.error("Error al subir archivo:", error.message);
+//     res.status(400).json({ error: error.message });
+//   }
+// }); 
+productRouter.post("/", fileUpload(), async (req, res) => {
   try {
-    console.log(req.file);
-    const file = req.file;
-    const product = req.body; // Parsea el objeto JSON
-    const basePath = `${req.protocol}://${req.get('host')}/public/uploads/`;
-    if (file) {
-      product.image = `${basePath}${file.name}`
+    if (!req.files || !req.files.images) {
+      return res.status(400).json({ error: 'No image in the request' });
     }
-    
-    const createdProduct = await createProduct(product);
+    const basePath = `${req.protocol}://${req.get('host')}/public/uploads/`;
+    console.log(basePath);
+    const file = req.files.images
+    const product = req.body;
+    const createdProduct = await createProduct(product, file,basePath);
     res.status(201).json(createdProduct);
   } catch (error) {
-    console.error("Error creating product:", error.message);
+    
+    console.error("Error get products:", error.message);
     res.status(400).json({ error: error.message });
   }
 });

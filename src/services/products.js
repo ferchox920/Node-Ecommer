@@ -1,17 +1,27 @@
 import mongoose from "mongoose";
 import Category from "../models/category.js";
 import Product from "../models/products.js";
+import fs from 'fs';
 
+export async function createProduct(productData, file, basePath) {
+  let createdProduct;
 
-
-export async function createProduct(productData) {
   try {
     const { category, code } = productData;
+
+    // Asegúrate de que la carpeta de destino exista
+    const uploadPath = "src/public/uploads";
+    if (!fs.existsSync(uploadPath)) {
+      fs.mkdirSync(uploadPath, { recursive: true }); // Crea la carpeta si no existe
+    }
 
     const existingProduct = await Product.findOne({ code });
     if (existingProduct) {
       throw new Error("Product with the given code already exists");
     }
+
+    // Crea el archivo en la ubicación deseada
+    fs.writeFileSync(`${uploadPath}${file.name}`, file.data);
 
     if (!mongoose.isValidObjectId(category)) {
       throw new Error("Invalid category");
@@ -22,14 +32,25 @@ export async function createProduct(productData) {
       throw new Error("Category not found");
     }
 
-    const createdProduct = await Product.create(productData);
-    return createdProduct;
+    // Actualiza la ruta de la imagen en los datos del producto
+    productData.image = `${basePath}${file.name}`;
+
+    // Crea el producto
+    createdProduct = await Product.create(productData);
   } catch (error) {
     console.error("Error creating product:", error);
+
+    // Si ocurrió un error, elimina el archivo creado
+    const uploadPath = "public/uploads";
+    if (createdProduct && fs.existsSync(`${uploadPath}/1.jpg`)) {
+      fs.unlinkSync(`${uploadPath}/1.jpg`);
+    }
+
     throw error;
   }
-}
 
+  return createdProduct;
+}
 
 export async function countProducts() {
   try {
