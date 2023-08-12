@@ -2,6 +2,7 @@ import { Router } from "express";
 import { countProducts, createProduct, deleteProduct, findFeatured, getProduct, getProducts, updateProduct } from "../services/products.js";
 import fileUpload from "express-fileupload";
 import fs from 'fs'; 
+import path from "path";
 
 const productRouter = Router();
 
@@ -10,8 +11,15 @@ productRouter.post("/", fileUpload(), async (req, res) => {
     if (!req.files || !req.files.images) {
       return res.status(400).json({ error: "No image in the request" });
     }
+    const allowedImageFormats = [".jpg", ".jpeg", ".png"];
     const basePath = `${req.protocol}://${req.get("host")}/public/uploads/`;
     const file = req.files.images;
+    const fileExtension = path.extname(file.name);
+
+    if (!allowedImageFormats.includes(fileExtension.toLowerCase())) {
+      return res.status(400).json({ error: "Only image formats are allowed" });
+    }
+
     const product = req.body;
     const createdProduct = await createProduct(product, file, basePath);
     res.status(201).json(createdProduct);
