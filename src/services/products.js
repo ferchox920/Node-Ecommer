@@ -35,23 +35,35 @@ export async function createProduct(productData, file, basePath) {
     // Actualiza la ruta de la imagen en los datos del producto
     productData.image = `${basePath}${file.name}`;
 
+    // Agrega la ruta de la imagen al array de imágenes
+    if (!productData.images) {
+      productData.images = [];
+    }
+    productData.images.push(productData.image);
+
     // Crea el producto
     createdProduct = await Product.create(productData);
+    return createdProduct
   } catch (error) {
     console.error("Error creating product:", error);
 
-    // Si ocurrió un error, elimina el archivo creado
-    const uploadPath = "public/uploads";
-    if (createdProduct && fs.existsSync(`${uploadPath}/1.jpg`)) {
-      fs.unlinkSync(`${uploadPath}/1.jpg`);
+    // Si ocurrió un error, elimina la ruta de la imagen del array de imágenes
+    if (productData.images && productData.images.length > 0) {
+      const index = productData.images.indexOf(productData.image);
+      if (index !== -1) {
+        productData.images.splice(index, 1);
+      }
     }
 
+    // Si ocurrió un error, elimina el archivo creado
+    const uploadPath = "public/uploads";
+    if (createdProduct && fs.existsSync(`${uploadPath}${file.name}`)) {
+      fs.unlinkSync(`${uploadPath}${file.name}`);
+    }
+    console.error("Error products:", error);
     throw error;
   }
-
-  return createdProduct;
 }
-
 export async function countProducts() {
   try {
     const count = await Product.countDocuments();
